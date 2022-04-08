@@ -1,5 +1,5 @@
 get_release() {
-  curl -sL "https://github.com/transip/tipctl/tags" | grep -Po -m 1 "v[0-9]+\.[0-9]+\.[0-9]+$" | head -n 1
+  curl -sL "https://github.com/transip/tipctl/releases" | grep -Po -m 1 "v[0-9]+\.[0-9]+\.[0-9]+$" | head -n 1
 }
 
 fetch() {
