@@ -1,8 +1,8 @@
 class Tipctl < Formula
   desc "Command-line interface for the TransIP API"
   homepage "https://www.transip.eu/"
-  url "https://github.com/transip/tipctl/releases/download/v6.14.0/tipctl.phar"
-  sha256 "567d46eca59860bd30e2da1daa53c81e43f2f02f276a7079d1aac2d5961364ca"
+  url "https://github.com/transip/tipctl/releases/download/v6.12.1/tipctl.phar"
+  sha256 "9a233a0592aa645f84e33616b97b069c690045f18ce20cd7307e21e47fbdf3f8"
   license "Apache-2.0"
 
   depends_on "php"
