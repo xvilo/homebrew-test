@@ -91,6 +91,41 @@ jobs:
           echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
           echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
 
+  set-environment:
+    if: github.event_name == 'pull_request' && !contains(github.event.head_commit.message, 'skip-build')
+    runs-on: ubuntu-latest
+    needs: tap-syntax
+    outputs:
+      syntax-only: ${{ steps.check-labels.outputs.syntax-only }}
+      linux-runner: ${{ steps.check-labels.outputs.linux-runner }}
+      fail-fast: ${{ steps.check-labels.outputs.fail-fast }}
+      test-dependents: ${{ steps.check-labels.outputs.test-dependents }}
+      timeout-minutes: ${{ steps.check-labels.outputs.timeout-minutes }}
+      container: ${{ steps.check-labels.outputs.container }}
+      test-bot-formulae-args: ${{ steps.check-labels.outputs.test-bot-formulae-args }}
+      test-bot-dependents-args: ${{ steps.check-labels.outputs.test-bot-dependents-args }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check for CI labels
+        id: check-labels
+        uses: actions/github-script@v3
+        env:
+          SCRIPTS_PATH: .github/scripts
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const path = require('path')
+            const script = require(path.resolve(`${process.env.SCRIPTS_PATH}/environment.js`))
+            const formula_detect = {
+              testing_formulae: '${{needs.tap-syntax.outputs.testing_formulae}}',
+              added_formulae: '${{needs.tap-syntax.outputs.added_formulae}}',
+              deleted_formulae: '${{needs.tap-syntax.outputs.deleted_formulae}}'
+            }
+            try {
+              await script({github, context, core}, formula_detect)
+            } catch (error) {
+              console.error(error);
+            }
   build-formula:
     needs: set-environment
     if: github.event_name == 'pull_request' && !contains(github.event.head_commit.message, 'skip-build')
